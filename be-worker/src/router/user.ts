@@ -1,7 +1,7 @@
 import { Hono } from "hono"
 import bcrypt from "bcryptjs"
 
-const userRouter = new Hono<{ Bindings: CloudflareBindings }>();
+const userRouter = new Hono<{ Bindings: Env }>();
 
 userRouter.post('/', async (c) => {
  try {
@@ -35,6 +35,40 @@ userRouter.post('/', async (c) => {
    },
    201
   )
+ } catch (error) {
+  return c.json({ error: error }, 500)
+ }
+})
+
+userRouter.post('/login', async (c) => {
+ try {
+  const body = await c.req.json()
+  const { email, password } = body
+
+  if (!email || !password) {
+   return c.json({ error: "Vui lòng nhập email và mật khẩu" }, 400)
+  }
+
+  const user = await c.env.db.prepare("SELECT * FROM users WHERE email = ?").bind(email).first()
+
+  if (!user) {
+   return c.json({ error: "Email hoặc mật khẩu không đúng" }, 401)
+  }
+
+  const isValidPassword = await bcrypt.compare(password, user.password as string)
+
+  if (!isValidPassword) {
+   return c.json({ error: "Email hoặc mật khẩu không đúng" }, 401)
+  }
+
+  // Remove password from response
+  const { password: _, ...userWithoutPassword } = user
+
+  return c.json({
+   message: 'Login successfully',
+   data: userWithoutPassword
+  }, 200)
+
  } catch (error) {
   return c.json({ error: error }, 500)
  }

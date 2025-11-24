@@ -37,4 +37,4 @@ lerna-debug.log*
 !.env.example
 
 be-worker/.gitignore
-be-worker/wrangler.jsonc
+fe-agent/node_modules

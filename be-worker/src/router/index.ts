@@ -8,6 +8,6 @@ const router = new Hono();
 // Mount các router con
 router.route("/chat-history", chatHistoryRouter);
 router.route("/user", userRouter);
-router.route("/mess", messRouter);
+router.route("/message", messRouter);
 
 export default router;

@@ -20,11 +20,11 @@ routerChatHistory.post('/', async (c) => {
    body.title = "Chat history " + created_at
   }
   const stmt = await c.env.db.prepare("INSERT INTO chat_histories (user_id, title, created_at) VALUES (?, ?, ?)").bind(body.user_id, body.title, created_at)
-  const { results } = await stmt.run()
+  const result = await stmt.run()
   return c.json({
    message: 'Chat history created successfully',
    data: {
-    result: results
+    result: result
    }
   }, 201)
  }
