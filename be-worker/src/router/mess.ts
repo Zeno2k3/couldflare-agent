@@ -35,10 +35,31 @@ routerMessage.post('/ai', async (c) => {
       .all()
 
     // Prepare messages for AI (convert to proper format)
-    const aiMessages = previousMessages.map((msg: any) => ({
-      role: msg.role,
-      content: msg.content
-    }))
+    const systemPrompt = `You are a helpful Investment AI assistant.
+    You can generate charts to visualize data. To generate a chart, use the following format:
+    :::chart
+    {
+      "type": "pie" | "bar" | "line",
+      "title": "Chart Title",
+      "data": [
+        { "name": "Label", "value": 100, "color": "#8884d8" }
+      ]
+    }
+    :::
+    Supported types:
+    - pie: requires "name", "value", optional "color" in data
+    - bar: requires "name", "value", optional "color" in data
+    - line: requires "name", "value", optional "color" in data
+    
+    Always provide helpful analysis along with the chart.`;
+
+    const aiMessages = [
+      { role: 'system', content: systemPrompt },
+      ...previousMessages.map((msg: any) => ({
+        role: msg.role,
+        content: msg.content
+      }))
+    ];
 
     console.log(aiMessages)
 

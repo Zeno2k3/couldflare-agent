@@ -38,3 +38,13 @@ CREATE TABLE messages (
     FOREIGN KEY (chat_history_id) REFERENCES chat_histories(id) ON DELETE CASCADE
 );
 
+-- 6. Bảng MARKET_DATA
+CREATE TABLE market_data (
+    id TEXT PRIMARY KEY,
+    symbol TEXT NOT NULL,
+    name TEXT NOT NULL,
+    price REAL NOT NULL,
+    change_24h REAL NOT NULL,
+    updated_at INTEGER DEFAULT (strftime('%s', 'now'))
+);
+

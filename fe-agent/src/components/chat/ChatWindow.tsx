@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { chatApi, type Message } from '../../services/api';
-import { Send, Bot, User as UserIcon, Loader2 } from 'lucide-react';
+import { Send, User as UserIcon, Loader2, Sparkles } from 'lucide-react';
 import { clsx } from 'clsx';
+import { MessageContent } from './MessageContent';
+import { MarketCard } from './MarketCard';
 
 interface ChatWindowProps {
   chatId: number | null;
@@ -110,7 +112,6 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({ chatId, onChatCreated })
 
             try {
               const parsed = JSON.parse(data);
-              console.log('SSE Data:', parsed); // Debug log
 
               if (parsed.error) {
                 console.error('AI Error:', parsed.error);
@@ -154,77 +155,106 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({ chatId, onChatCreated })
   };
 
   return (
-    <div className="flex-1 flex flex-col h-screen bg-white">
-      {/* Messages Area */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-6">
-        {messages.length === 0 && !chatId && (
-          <div className="h-full flex flex-col items-center justify-center text-gray-400">
-            <Bot size={64} className="mb-4 text-gray-300" />
-            <p className="text-xl font-medium">Bắt đầu cuộc trò chuyện mới với AI Agent</p>
-          </div>
-        )}
-
-        {messages.map((msg) => (
-          <div
-            key={msg.id}
-            className={clsx(
-              'flex gap-4 max-w-3xl mx-auto',
-              msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'
-            )}
-          >
-            <div className={clsx(
-              'w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0',
-              msg.role === 'user' ? 'bg-blue-600' : 'bg-green-600'
-            )}>
-              {msg.role === 'user' ? <UserIcon size={16} className="text-white" /> : <Bot size={16} className="text-white" />}
+    <div className="flex-1 flex h-screen bg-gray-50">
+      {/* Main Chat Area */}
+      <div className="flex-1 flex flex-col min-w-0">
+        {/* Header */}
+        <header className="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between sticky top-0 z-10">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white shadow-lg shadow-blue-200">
+              <Sparkles size={20} />
             </div>
-            <div className={clsx(
-              'px-4 py-3 rounded-2xl max-w-[80%]',
-              msg.role === 'user'
-                ? 'bg-blue-600 text-white rounded-tr-none'
-                : 'bg-gray-100 text-gray-800 rounded-tl-none'
-            )}>
-              <p className="whitespace-pre-wrap leading-relaxed">{msg.content}</p>
+            <div>
+              <h1 className="font-bold text-gray-900 text-lg">Investment AI</h1>
+              <p className="text-xs text-gray-500 font-medium">Real-time market analysis</p>
             </div>
           </div>
-        ))}
+        </header>
 
-        {streamingContent && (
-          <div className="flex gap-4 max-w-3xl mx-auto">
-            <div className="w-8 h-8 rounded-full bg-green-600 flex items-center justify-center flex-shrink-0">
-              <Bot size={16} className="text-white" />
+        {/* Messages */}
+        <div className="flex-1 overflow-y-auto p-6 space-y-8 scroll-smooth">
+          {messages.length === 0 && !chatId && (
+            <div className="h-full flex flex-col items-center justify-center text-gray-400 space-y-6">
+              <div className="w-16 h-16 bg-white rounded-2xl shadow-sm border border-gray-100 flex items-center justify-center">
+                <Sparkles size={32} className="text-blue-600" />
+              </div>
+              <div className="text-center max-w-md">
+                <h2 className="text-2xl font-bold text-gray-900 mb-2">Chào mừng bạn đến với Investment AI!</h2>
+                <p className="text-gray-500">Đây là tổng quan thị trường hôm nay. Hãy hỏi tôi về cổ phiếu, xu hướng hoặc tư vấn danh mục.</p>
+              </div>
+              <div className="w-full max-w-md">
+                <MarketCard />
+              </div>
             </div>
-            <div className="px-4 py-3 rounded-2xl max-w-[80%] bg-gray-100 text-gray-800 rounded-tl-none">
-              <p className="whitespace-pre-wrap leading-relaxed">{streamingContent}</p>
-            </div>
-          </div>
-        )}
-        <div ref={messagesEndRef} />
-      </div>
+          )}
 
-      {/* Input Area */}
-      <div className="p-4 border-t border-gray-200 bg-white">
-        <div className="max-w-3xl mx-auto">
-          <form onSubmit={handleSubmit} className="relative">
-            <input
-              type="text"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              placeholder="Nhập tin nhắn..."
-              className="w-full pl-4 pr-12 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent shadow-sm"
-              disabled={isLoading}
-            />
-            <button
-              type="submit"
-              disabled={!input.trim() || isLoading}
-              className="absolute right-2 top-1/2 -translate-y-1/2 p-2 text-blue-600 hover:bg-blue-50 rounded-lg disabled:opacity-50 disabled:hover:bg-transparent transition-colors"
+          {messages.map((msg) => (
+            <div
+              key={msg.id}
+              className={clsx(
+                'flex gap-4 max-w-3xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-300',
+                msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'
+              )}
             >
-              {isLoading ? <Loader2 size={20} className="animate-spin" /> : <Send size={20} />}
-            </button>
-          </form>
-          <p className="text-center text-xs text-gray-400 mt-2">
-            AI có thể mắc lỗi. Hãy kiểm tra thông tin quan trọng.
-          </p>
+              <div className={clsx(
+                'w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 shadow-sm',
+                msg.role === 'user' ? 'bg-blue-600' : 'bg-white border border-gray-200'
+              )}>
+                {msg.role === 'user' ? (
+                  <UserIcon size={16} className="text-white" />
+                ) : (
+                  <Sparkles size={16} className="text-blue-600" />
+                )}
+              </div>
+              <div className={clsx(
+                'px-5 py-4 rounded-2xl max-w-[85%] shadow-sm',
+                msg.role === 'user'
+                  ? 'bg-blue-600 text-white rounded-tr-none'
+                  : 'bg-white border border-gray-100 text-gray-800 rounded-tl-none'
+              )}>
+                {msg.role === 'user' ? (
+                  <p className="whitespace-pre-wrap leading-relaxed">{msg.content}</p>
+                ) : (
+                  <MessageContent content={msg.content} />
+                )}
+              </div>
+            </div>
+          ))}
+
+          {streamingContent && (
+            <div className="flex gap-4 max-w-3xl mx-auto animate-pulse">
+              <div className="w-8 h-8 rounded-full bg-white border border-gray-200 flex items-center justify-center flex-shrink-0 shadow-sm">
+                <Sparkles size={16} className="text-blue-600" />
+              </div>
+              <div className="px-5 py-4 rounded-2xl max-w-[85%] bg-white border border-gray-100 text-gray-800 rounded-tl-none shadow-sm">
+                <MessageContent content={streamingContent} />
+              </div>
+            </div>
+          )}
+          <div ref={messagesEndRef} />
+        </div>
+
+        {/* Input Area */}
+        <div className="p-6 bg-white border-t border-gray-200">
+          <div className="max-w-3xl mx-auto">
+            <form onSubmit={handleSubmit} className="relative group">
+              <input
+                type="text"
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                placeholder="Hỏi về cổ phiếu, xu hướng, hoặc tư vấn danh mục..."
+                className="w-full pl-6 pr-14 py-4 rounded-2xl bg-gray-50 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 focus:bg-white transition-all shadow-sm text-gray-700 placeholder:text-gray-400"
+                disabled={isLoading}
+              />
+              <button
+                type="submit"
+                disabled={!input.trim() || isLoading}
+                className="absolute right-3 top-1/2 -translate-y-1/2 p-2.5 bg-blue-600 text-white rounded-xl hover:bg-blue-700 disabled:opacity-50 disabled:hover:bg-blue-600 transition-all shadow-md shadow-blue-200"
+              >
+                {isLoading ? <Loader2 size={18} className="animate-spin" /> : <Send size={18} />}
+              </button>
+            </form>
+          </div>
         </div>
       </div>
     </div>

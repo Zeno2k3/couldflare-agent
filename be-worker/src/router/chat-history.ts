@@ -1,6 +1,6 @@
 import { Hono } from "hono";
 
-const routerChatHistory = new Hono<{ Bindings: CloudflareBindings }>();
+const routerChatHistory = new Hono<{ Bindings: Env }>();
 
 interface ChatHistory {
  user_id: number;
@@ -58,9 +58,9 @@ routerChatHistory.put('/:id', async (c) => {
   if (!check_id) {
    return c.json({ error: 'Chat history not found' }, 404)
   }
-  const stmt = await c.env.db.prepare("UPDATE chat_histories SET title = ? WHERE id = ?").bind(title)
+  const stmt = await c.env.db.prepare("UPDATE chat_histories SET title = ? WHERE id = ?").bind(title, id)
   const { results } = await stmt.run()
-  return c.json({ results }, 200)
+  return c.json({ message: 'Chat history updated successfully', results }, 200)
  }
  catch (error) {
   return c.json({ error: error }, 500)

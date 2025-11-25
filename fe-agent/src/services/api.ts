@@ -42,8 +42,12 @@ export const chatApi = {
     api.get(`/chat-history/all/${userId}`),
   createHistory: (userId: number, title: string) =>
     api.post('/chat-history', { user_id: userId, title }),
+  updateHistory: (id: number, title: string) =>
+    api.put(`/chat-history/${id}`, { title }),
   deleteHistory: (userId: number, id: number) =>
     api.delete(`/chat-history/${userId}/${id}`),
   getMessages: (historyId: number) =>
     api.get(`/message/history/${historyId}`),
+  getMarketData: () =>
+    api.get('/market'),
 };
