@@ -3,10 +3,9 @@ name: Fullstack Auto Test
 # Chạy khi có code được push vào nhánh main hoặc có Pull Request
 on:
   push:
-    branches: ["main"]
+    branches: ["master"] # Sửa main thành master
   pull_request:
-    branches: ["main"]
-
+    branches: ["master"] # Sửa main thành master
 jobs:
   # Job 1: Test phần Backend
   test-backend:
