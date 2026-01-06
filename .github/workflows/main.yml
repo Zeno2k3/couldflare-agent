@@ -3,16 +3,16 @@ name: Fullstack Auto Test
 # Chạy khi có code được push vào nhánh main hoặc có Pull Request
 on:
   push:
-    branches: ["master"] # Sửa main thành master
+    branches: ["master"]
   pull_request:
-    branches: ["master"] # Sửa main thành master
+    branches: ["master"]
 jobs:
   # Job 1: Test phần Backend
   test-backend:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./backend # <--- Trỏ vào thư mục backend của bạn
+        working-directory: ./be-worker # <--- Trỏ vào thư mục backend của bạn
 
     steps:
       - uses: actions/checkout@v3
@@ -32,7 +32,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./frontend # <--- Trỏ vào thư mục frontend của bạn
+        working-directory: ./fe-agent # <--- Trỏ vào thư mục frontend của bạn
 
     steps:
       - uses: actions/checkout@v3
