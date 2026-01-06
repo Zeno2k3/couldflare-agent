@@ -1,0 +1,50 @@
+name: Fullstack Auto Test
+
+# Chạy khi có code được push vào nhánh main hoặc có Pull Request
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  # Job 1: Test phần Backend
+  test-backend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./backend # <--- Trỏ vào thư mục backend của bạn
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18"
+
+      - name: Install Backend Dependencies
+        run: npm install
+
+      - name: Run Backend Unit Tests
+        run: npm test
+
+  # Job 2: Test phần Frontend
+  test-frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./frontend # <--- Trỏ vào thư mục frontend của bạn
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18"
+
+      - name: Install Frontend Dependencies
+        run: npm install
+
+      - name: Run Frontend Unit Tests
+        # Thêm -- --watchAll=false để nó chạy 1 lần rồi dừng, không treo máy chờ
+        run: npm test -- --watchAll=false
