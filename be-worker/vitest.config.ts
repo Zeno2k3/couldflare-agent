@@ -5,7 +5,7 @@ export default defineWorkersConfig({
   // standard vitest options if any
   poolOptions: {
    workers: {
-    wrangler: { configPath: './wrangler.jsonc' },
+    wrangler: { configPath: './wrangler.test.jsonc' },
    },
   },
  },
