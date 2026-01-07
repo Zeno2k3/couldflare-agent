@@ -4,13 +4,21 @@
 	"scripts": {
 		"dev": "wrangler dev",
 		"deploy": "wrangler deploy --minify",
-		"cf-typegen": "wrangler types --env-interface CloudflareBindings"
+		"cf-typegen": "wrangler types --env-interface CloudflareBindings",
+		"test": "vitest run"
 	},
 	"dependencies": {
 		"bcryptjs": "^3.0.3",
 		"hono": "^4.10.6"
 	},
 	"devDependencies": {
+		"@cloudflare/vitest-pool-workers": "^0.11.1",
+		"vitest": "^2.1.8",
 		"wrangler": "^4.50.0"
+	},
+	"overrides": {
+		"vitest": "^2.1.8",
+		"@vitest/snapshot": "^2.1.8",
+		"@vitest/runner": "^2.1.8"
 	}
 }

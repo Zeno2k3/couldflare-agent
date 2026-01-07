@@ -1,49 +1,59 @@
 name: Fullstack Auto Test
 
-# Chạy khi có code được push vào nhánh main hoặc có Pull Request
+# Chạy khi có code được push vào nhánh master hoặc có Pull Request
 on:
   push:
     branches: ["master"]
   pull_request:
     branches: ["master"]
+
 jobs:
   # Job 1: Test phần Backend
   test-backend:
+    name: Backend Test (Cloudflare Worker)
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./be-worker # <--- Trỏ vào thư mục backend của bạn
+        working-directory: ./be-worker
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4 # Update to v4 usually better
+
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4 # Update to v4
         with:
-          node-version: "18"
+          node-version: "20" # Recommend LTS v20
+          cache: 'npm'
+          cache-dependency-path: './be-worker/package-lock.json'
 
       - name: Install Backend Dependencies
-        run: npm install
+        run: npm ci # Use ci for clean install
 
       - name: Run Backend Unit Tests
         run: npm test
 
   # Job 2: Test phần Frontend
   test-frontend:
+    name: Frontend Test (React + Vitest)
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./fe-agent # <--- Trỏ vào thư mục frontend của bạn
+        working-directory: ./fe-agent
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
+
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: "18"
+          node-version: "20"
+          cache: 'npm'
+          cache-dependency-path: './fe-agent/package-lock.json'
 
       - name: Install Frontend Dependencies
-        run: npm install
+        run: npm ci
 
       - name: Run Frontend Unit Tests
-        # Thêm -- --watchAll=false để nó chạy 1 lần rồi dừng, không treo máy chờ
-        run: npm test -- --watchAll=false
+        # Vitest tự động chạy 1 lần trong môi trường CI, không cần --watchAll=false
+        # Tuy nhiên để chắc chắn, ta có thể dùng `npm test -- --run`
+        run: npm test -- --run
